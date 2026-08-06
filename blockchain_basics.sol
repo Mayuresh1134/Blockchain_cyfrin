@@ -142,4 +142,110 @@ contract PointerExample {
 }
 
 
- 
+//Storage Locations
+//1. storage: permanent storage on blockchain with high gas costs which means expensive.
+//2. memory: creates a copy or temporary storage during function execution, cheaper than storage, generally using in function parameters, return values.
+//3. calldata: read only temporary storage for function parameters like getting input and it is most gas efficient.
+
+
+//State Variable - stored in storage
+uint256[] permanentArray;
+
+function passArray(uint256[] calldata inputValues) external {
+    
+    //inputValues exists in calldata which can't be modified only called as input.
+    
+    uint256[] memory tempArray = new uint256[](inputValues.length); //local variable in memory - temporary copy
+    for(uint i = 0; i < inputValues.length; i++){
+        tempArray[i] = inputValues[i]*2;
+    }
+    
+    //Reference to storage - changes will persist
+    uint256[] storage myStorageArray = permanentArray;
+    myStorageArray.push(tempArray[0]); // This updates the blockchain state
+
+}
+
+// we usually  have reference types like strings, arrays and structs:
+// 1. Use calldata for external function parameters like input and it is most cost efficient
+// 2. Use memory for function parameters which are to be updated.
+// 3. Finally use storage when we need to put that values on the chain or modify state variables.
+
+
+//Functions: blocks of code that perform specific actions.  
+
+//Example:
+
+contract Counter{
+
+    uint256 public counter =0;
+
+    //This function increases the count by 1
+    function increment() pubic {
+        count = count +1;
+    }
+
+    function decrement() public {
+        count = count -1;
+
+    }
+}
+
+/*
+A function has several components:
+
+Name: What you call the function (like increment).
+
+Parameters: Input values the function needs (none in the example above).
+
+Visibility: Who can call this function (public in the example). More on this coming shortly!
+
+Returns: What output the function provides (none in the example).
+
+Function Body: The code inside the curly braces {}.
+
+*/
+
+Example:
+function add(uint256 a, uint256 b) public pure returns (uint256){
+    return a+b;
+}
+
+// pure means it doesn't read or modify state, returns a uint256 value
+
+//Function visibility: 
+/* 1. public: anyone can call this function
+   2. private: only in that particular contract that function can be accessed
+   3. internal: only that contract and the contract that inherit from it can call this function
+   4. external: only calls from the outside the contract are allowed
+
+*/
+
+// Special function types 
+
+//1. view: can read but not modify state
+
+function getCount() public view returns (uint256) {
+    return count;
+}
+
+// 2. pure: Cannot read or modify state
+
+function addNumbers(uint256 a, uint256 b) public pure returns (uint256) {
+    return a+b;
+}
+
+// 3. constructor: Runs only once when the contract is deployed
+
+constructor() {
+    owner = msg.sender; //sets the contract creator as the owner
+}
+
+// 4. payable: means that the function can be sent ether.
+
+mapping(address => uint256) balances;
+
+function sendMoney() public payable {
+
+    balances[user] += msg.value;
+}
