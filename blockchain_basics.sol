@@ -249,3 +249,53 @@ function sendMoney() public payable {
 
     balances[user] += msg.value;
 }
+
+//Transation Context Variables: provides access to transaction information and blockchain data through special builtin variables.
+
+//1. msg.sender: the address that called the current function which is a wallet address or contract address, commonly used for access control and tracking user activity
+//Example:
+
+contract OwnerExample {
+    address public owner;
+    
+    constructor(){
+        owner = msg.sender; //The address that deploys the contract becomes the owner.
+    }
+}
+
+//2. msg.value: The amount of eth sent with the function call: only available if function is marked payable and used to receive payments or deposits
+//Example:
+
+contract PaymentExample{
+    mapping(address => uint256) public payments;
+
+    //function that can receive eth
+    function makePayment() public payable {
+        require(msg.value> 0, "Must send some ETH");
+        payments[msg.sender] += msg.value;
+    }
+
+    //Funtion that checks if minimum payment was made
+    function verifyMinimumPayment(uint256 minimumAmount) public view returns (bool) {
+        return payments[msg.sender] >= minimumAmount;
+    }
+
+}
+
+//3. msg.data: The complete calldata(input data) of the transation: contains the function signature and arguments, used in advanced use cases and proxies.
+//Example:
+
+contract DataExample {
+    bytes public lastCallData;
+
+    //Store the raw calldata of the latest transaction
+    function recordCallData() public {
+        lastCallData = msg.data;
+
+    }
+
+    //View the size of the calldata
+    function getCallDataSize() public view returns (uint256) {
+        return lastCallData.length;
+    }
+}
