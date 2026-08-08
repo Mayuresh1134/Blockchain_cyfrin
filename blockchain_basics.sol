@@ -299,3 +299,49 @@ contract DataExample {
         return lastCallData.length;
     }
 }
+
+//Block Information Variables: 
+
+//1. block.timestamp: the current block's timestamp - can e used for time based logic, not to be relied or precise timings
+
+contract TimestampExample {
+
+    uint256 public contractCreationTime;
+
+    constructor() {
+        contractCreationTime = block.timestamp;
+    }
+
+    //Check if a specified duration has passed since contract creation
+    function hasDurationPassed(uint256 durationInSeconds) public view returns (bool){
+        return(block.timestamp >= contractCreationTime + durationInSeconds);
+    }
+
+    //Create a simple time lock that releases after a specified DataExample
+    function isTimeLockExpired(uint256 releaseTime) public view returns (bool){
+        return block.timestamp >= releaseTime;
+    }
+
+}
+
+//2. block.number : The current block number: useful for counting blocks o implementing block based logic
+
+contract BlockNumberExample {
+
+    uint256 public deploymentBlockNUmber;
+
+    constructor() {
+        deploymentBlockNumber = block.number:
+    }
+
+    //Calculate how many blocks have been mined since deployement
+    function getBlocksPassed() public view returns (uint256) {
+        return block.number - deploymentBlockNumber;
+    }
+
+    //Check if enough blocks have passed for a specific action
+    funtion hasReachedBlockThreshold(uint256 blockThreshold) public view returns (bool) {
+        return getBlocksPassed() >= blockThreshold;
+    }
+
+}
