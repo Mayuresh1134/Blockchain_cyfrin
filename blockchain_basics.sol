@@ -345,3 +345,60 @@ contract BlockNumberExample {
     }
 
 }
+
+// Example with context variables
+
+contract TimeLockedWallet {
+
+    address public owner;
+    uint256 public unlockTime;
+
+    event Deposit(address indexed sender, uint256 amount, uint256 timestamp)
+    event Withdrawal(uint256 amount, uint256 timestamp);
+
+    constructor(uint256 _unlockDuration) {
+        owner = msg.sender;
+        unlockTime = block.timestamp + _unlockDuration;
+    }
+
+    //Accept deposits from anyone
+    funtion deposit() public payable {
+        require(msg.value > 0, "Must deposit some ETH");
+        emit Deposit(msg.sender, msg.value, block.timestamp);
+
+    }
+
+    //Only allow the owner to withdraw after the unlock time 
+    function withdraw() public {
+        require(msg.sender == owner, "You are not the owner");
+        require(block.timestamp >= unlockTime, "Funds are still locked");
+        require(address(this).balance>0, "No funds to withdraw");
+
+        uint256 balance = address(this).balance;
+        payable(owner).transfer(balance);
+
+        emit Withdrawal(balance, block.timestamp);
+    }
+
+    //Check if withdrawal is possible yet
+    funtion withdrawalStatus() public view returns (bool canWithdraw, uint256 remainingTime){
+        if(block.timestamp >= unlockTime){
+            return(true, 0);
+        }else {
+            return (false, unlockTime - block.timestamp);
+        }
+    }
+}
+
+/* 
+These global variables are critical for many smart contract operations, especially for:
+
+Authentication (who is calling the function?)
+
+Value transfer (how much ETH was sent?)
+
+Time-based conditions (when did something happen?)
+
+Block-based logic (how many blocks have passed?)
+
+*/
